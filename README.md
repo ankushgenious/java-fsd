@@ -217,3 +217,107 @@ import  Practice2.*;
 
 
 
+# Practice Project 3
+
+package Practice;
+
+class C{
+	
+	void msg2() {
+		
+		int a = 10;
+		
+		int b = 20;
+		
+		System.out.println(" "+a+ " "+b);
+	}
+	
+	public static void main(String args[]) {
+		
+		System.out.println("values of a and b are ");
+		
+		C value = new C(); //Here we are creating an object to class non static method of same class 
+		value.msg2();
+		
+		D value1 = new D();// Here we are creating an Object to call non static method of other class 
+		value1.msg4();
+		
+        A.msg();       // Here we are Calling static method of java by using its classNmae.methodName
+		
+	}
+}
+
+
+
+//METHOD OVERLOADING 
+
+package Practice;
+
+public class MethodOverloading {
+	
+	static int sub(int x, int y) {
+		return ( x-y);
+	}
+	
+	static int add(int x, int y,int z) // Here method name is same but different in number of parameter passed
+	{
+		return ( x+y+z);
+	}
+	
+	
+	
+	static double sub(double x, double y) // Here we are using same method name but different in return types 
+	{
+		
+		return (x-y);
+	}
+	
+	static float sub(float x,float y) {
+		 return (x-y);
+	}
+
+	public static void main(String args[]) {
+		
+		
+		int a = sub(45, 23);  
+		double b = sub(23.67,10.5);  
+		float  c = sub(35.5f,33.3f);
+		int d = add(2,4,5);
+		System.out.println("subtraction of integer values: " +a);  
+		System.out.println("subtraction of double values: " +b); 
+		System.out.println("subtraction of float values: " +c); 
+		
+		System.out.println("addition of three number is :"+d);
+		  
+		 
+	}
+}
+
+
+//ABSTRACT METHOD CALLING 
+
+
+package Practice;
+
+abstract class AbstractMethodExample   
+{    
+//abstract method declaration  
+abstract void show();    
+}    
+public class AbstractMethodCalling extends AbstractMethodExample  
+{    
+//abstract method implementation      
+void show()  
+{  
+System.out.println("The abstract method called.");  
+}    
+public static void main(String args[])  
+{    
+AbstractMethodExample obj = new AbstractMethodCalling();    
+//calling abstract method   
+obj.show();    
+}    
+}    
+
+
+
