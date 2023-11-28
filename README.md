@@ -299,31 +299,27 @@ public class MethodOverloading {
 
 package Practice;
 
-    abstract class AbstractMethodExample   
-{    
-    //abstract method declaration 
-    	
-   abstract void show();    
-   }    
-   public class AbstractMethodCalling extends AbstractMethodExample  
-   {    
+abstract class AbstractMethodExample {
+	// abstract method declaration
+
+	abstract void show();
+}
+
+public class AbstractMethodCalling extends AbstractMethodExample {
 //abstract method implementation      
-     void show()  
-   
-     {  
-   
-    	 System.out.println("The abstract method called.");  
-      }    
+	void show()
 
-     public static void main(String args[])  
-     {    
+	{
 
-    	 AbstractMethodExample obj = new AbstractMethodCalling();    
-                                                                       //calling abstract method   
-           obj.show();    
- 
-     }    
-}    
+		System.out.println("The abstract method called.");
+	}
 
+	public static void main(String args[]) {
 
+		AbstractMethodExample obj = new AbstractMethodCalling();
+		// calling abstract method
+		obj.show();
+
+	}
+}
 
