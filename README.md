@@ -323,3 +323,86 @@ public class AbstractMethodCalling extends AbstractMethodExample {
 	}
 }
 
+
+
+
+
+# practice project : 4
+
+//DEFAULT CONSTRUCTOR
+
+package Practice;
+import java.io.*;
+
+
+
+
+public class alpha {
+	
+	alpha()
+	{
+		System.out.println("Default constructor");
+		
+	};
+	
+	public static void main(String args[])
+	{
+		
+		alpha hello = new alpha();
+		
+	}
+	
+	
+
+}
+
+//PARAMETERIZED CONSTRUCTOR
+
+package Practice;
+import java.io.*;
+import java.util.*;
+
+
+class beta{
+	
+	String name;
+	int id;
+	String address;
+
+	
+	 beta(String name, int id, String address){
+		
+		this.name = name;
+		this.id = id;
+		this.address = address;
+	}
+	
+}
+
+
+public class alpha {
+	
+		public static void main(String args[])
+	{
+		
+		alpha hello = new alpha();
+		System.out.println("enter name, address and ID_number \n");
+		Scanner sc = new Scanner(System.in);
+		String name = sc.nextLine();
+		String address = sc.nextLine();
+		int id = sc.nextInt();
+		
+		
+		
+		
+		//beta geek1 = new beta("ankush", 12, "india");
+		System.out.print("name is "+name+" id_number "+id+"....address is "+address);
+		//System.out.println("....address is "+address);
+		
+	}
+	
+	
+
+}
+
+//
