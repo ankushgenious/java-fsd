@@ -4,54 +4,7 @@ This repository contains PracticeProjects
 
 # Practice-Project 1
 
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-
-    <session-factory>
-        <!-- JDBC Database connection settings -->
-        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/your_database_name</property>
-        <property name="hibernate.connection.username">your_username</property>
-        <property name="hibernate.connection.password">your_password</property>
-        <!-- JDBC connection pool settings -->
-        <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hibernate.c3p0.max_size">20</property>
-        <property name="hibernate.c3p0.timeout">300</property>
-        <property name="hibernate.c3p0.max_statements">50</property>
-        <property name="hibernate.c3p0.idle_test_period">3000</property>
-        <!-- Specify dialect -->
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <!-- Echo all executed SQL to stdout -->
-        <property name="hibernate.show_sql">true</property>
-        <!-- Drop and re-create the database schema on startup -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
-        <!-- Mention annotated class -->
-        <!-- <mapping class="com.example.model.YourEntityClass" /> -->
-    </session-factory>
-</hibernate-configuration>
-
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
-public class HibernateDemo {
-    public static void main(String[] args) {
-        // Create a Hibernate configuration and session factory
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
-        SessionFactory sessionFactory = configuration.buildSessionFactory();
-
-        // Create a session
-        try (Session session = sessionFactory.openSession()) {
-            // Perform database operations using Hibernate
-            // ...
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%> <!DOCTYPE html> <html> <head> <meta charset="UTF-8"> <title>Simple JSP</title> </head> <body> <% out.println("<h2>My first JSP page.</h2>"); %> </body> </html>
 
 
 
@@ -59,131 +12,145 @@ public class HibernateDemo {
 
 
 #  Practice-Project 2
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-    <session-factory>
-        <!-- JDBC Database connection settings -->
-        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/your_database_name</property>
-        <property name="hibernate.connection.username">your_username</property>
-        <property name="hibernate.connection.password">your_password</property>
-        <!-- JDBC connection pool settings -->
-        <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hibernate.c3p0.max_size">20</property>
-        <property name="hibernate.c3p0.timeout">300</property>
-        <property name="hibernate.c3p0.max_statements">50</property>
-        <property name="hibernate.c3p0.idle_test_period">3000</property>
-        <!-- Specify dialect -->
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <!-- Echo all executed SQL to stdout -->
-        <property name="hibernate.show_sql">true</property>
-        <!-- Drop and re-create the database schema on startup -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
-        <!-- Mention annotated class -->
-        <!-- <mapping class="com.example.model.YourEntityClass" /> -->
-    </session-factory>
-</hibernate-configuration>
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
-public class HibernateXMLDemo {
-    public static void main(String[] args) {
-        // Create a Hibernate configuration and session factory
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
-        SessionFactory sessionFactory = configuration.buildSessionFactory();
-
-        // Create a session
-        try (Session session = sessionFactory.openSession()) {
-            // Perform database operations using Hibernate
-            // ...
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JSP Implicit Objects</title>
+</head>
+<body>
+<%
+String responseCheck = request.getParameter("office");
+if (responseCheck != null ) {
+response.setStatus(response.SC_MOVED_TEMPORARILY);
+response.setHeader("Location", "response-redirect.jsp?office=" + 
+responseCheck);
 }
-
+String errorCheck = request.getParameter("error");
+if (errorCheck != null ) {
+int x = 0;
+if (x == 0)
+throw new RuntimeException("Exception has been raised");
+}
+%>
+<%
+int serverPort = request.getServerPort() ;
+out.println("The Server is running on port " + String.valueOf(serverPort) + 
+"<br>");
+out.println("Servlet Name is " + config.getServletName() + "<br>");
+out.println("Server Info:" + application.getServerInfo() + "<br>");
+String pageName = page.toString();
+out.println("The name of the page is " + pageName + "<br>");
+pageContext.setAttribute("userid", "John Doe");
+out.println("userId attribute from pageContext: " + 
+pageContext.getAttribute("userid") + 
+"<br>"); 
+%>
+<a href="index.jsp?office=head_office">Show usage of response 
+object</a><br>
+<a href="index.jsp?error=1">Show usage of error object</a><br>
+<%
+if (response.containsHeader("Office"))
+out.println("Current location is " + response.getHeader("Office"));
+%>
+</body>
+</html>
+response-redirect.jsp:
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Get Header Example</title>
+</head>
+<body>
+<%
+String office = request.getParameter("office");
+if (office != null)
+out.println("value of Office obtained :" + office + "<br>");
+else
+out.println("No value of Office found<br>");
+%>
+</body>
+</html>
+Handle-error.jsp :
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Error Handling page</title>
+</head>
+<body>
+<br>
+An exception was generated. Details are above:<br>
+</body>
+</html>
 
 
 
 # Practice Project 3
 
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-    <session-factory>
-        <!-- JDBC Database connection settings -->
-        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/your_database_name</property>
-        <property name="hibernate.connection.username">your_username</property>
-        <property name="hibernate.connection.password">your_password</property>
-        <!-- JDBC connection pool settings -->
-        <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hibernate.c3p0.max_size">20</property>
-        <property name="hibernate.c3p0.timeout">300</property>
-        <property name="hibernate.c3p0.max_statements">50</property>
-        <property name="hibernate.c3p0.idle_test_period">3000</property>
-        <!-- Specify dialect -->
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <!-- Echo all executed SQL to stdout -->
-        <property name="hibernate.show_sql">true</property>
-        <!-- Drop and re-create the database schema on startup -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
-        <!-- Scans packages for annotated classes -->
-        <property name="hibernate.archive.autodetection">class, hbm</property>
-    </session-factory>
-</hibernate-configuration>
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String username;
-    private String password;
-
-    // Constructors, getters, setters, etc.
-}
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-
-public class HibernateAnnotationDemo {
-    public static void main(String[] args) {
-        // Create a Hibernate configuration and session factory
-        Configuration configuration = new Configuration().configure();
-        SessionFactory sessionFactory = configuration.buildSessionFactory();
-
-        // Create a session
-        try (Session session = sessionFactory.openSession()) {
-            // Create a transaction
-            Transaction transaction = session.beginTransaction();
-
-            // Perform database operations using Hibernate annotations
-            User user = new User();
-            user.setUsername("john_doe");
-            user.setPassword("password123");
-
-            // Save the user
-            session.save(user);
-
-            // Commit the transaction
-            transaction.commit();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+pageEncoding="UTF 8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JSP Directives</title>
+</head>
+<body>
+This is content from the main file.
+<%@ include file="included.jsp" %>
+<hr>
+Example of using JSTL taglibs for formatting output<br>
+<p>
+Currency = <fmt:formatNumber value = "145" type = "currency"/>
+<p>
+<p>
+<c:set var = "now" value = "<%= new java.util.Date()%>" />
+Current date and time is <fmt:formatDate pattern = "yyyy-MM-dd hh:mm:ss"
+value = 
+"${now}" />
+</p>
+</body>
+</html>
+Included.jsp:
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+pageEncoding="UTF 8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<% out.println("This is content from included file.<br><br>"); %>
+</body>
+</html>
+Web.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+version="2.5">
+<display-name>JSPDirectives</display-name>
+<welcome-file-list>
+<welcome-file>index.html</welcome-file>
+<welcome-file>index.jsp</welcome-file>
+<welcome-file>index.htm</welcome-file>
+<welcome-file>default.html</welcome-file>
+<welcome-file>default.jsp</welcome-file>
+<welcome-file>default.htm</welcome-file>
+</welcome-file-list>
+</web-app>
 
 
 
@@ -191,519 +158,167 @@ public class HibernateAnnotationDemo {
 
 # practice project : 4
 
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
-    <Appenders>
-        <File name="HibernateLogFile" fileName="logs/hibernate.log">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-        </File>
-    </Appenders>
-    <Loggers>
-        <Logger name="org.hibernate" level="debug" additivity="false">
-            <AppenderRef ref="HibernateLogFile" />
-        </Logger>
-        <Root level="error">
-            <AppenderRef ref="HibernateLogFile" />
-        </Root>
-    </Loggers>
-</Configuration>
-
-<!-- Other properties in hibernate.cfg.xml -->
-<property name="hibernate.show_sql">true</property>
-<property name="hibernate.format_sql">true</property>
-<property name="hibernate.use_sql_comments">true</property>
-<property name="hibernate.generate_statistics">true</property>
-<property name="hibernate.hbm2ddl.auto">update</property>
-
-<!-- Log4j configuration -->
-<property name="hibernate.jdbc.log.was.flush.statement">true</property>
-<property name="hibernate.jdbc.log.was.formatted">true</property>
-<property name="hibernate.jdbc.log.was.sql">true</property>
-<property name="hibernate.jdbc.log.was.parameters">true</property>
-<property name="hibernate.jdbc.log.was.log_statement">true</property>
-<property name="hibernate.jdbc.log.was.log_statement_with_id">true</property>
-<property name="hibernate.connection.provider_disables_autocommit">true</property>
-<property name="hibernate.transaction.jta.platform">org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform</property>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+pageEncoding="UTF 8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JSP Action Tags</title>
+</head>
+<body>
+Usage of useBean tag<br>
+<jsp:useBean id="productBean" class="com.ecommerce.ProductBean"
+scope="session"></jsp:useBean>
+<jsp:setProperty property="productId" name="productBean" value="18791"/>
+<jsp:setProperty property="productName" name="productBean" value="Optical 
+Wireless 
+Mouse"/>
+<jsp:setProperty property="price" name="productBean" value="600.00"/>
+<a href="showbean.jsp">Access bean properties from another page</a><br>
+<a href="forward.jsp">Use Forward action to go to Google</a><br>
+<hr>
+<jsp:text>
+<![CDATA[This is my content.<br/>This will show within a text action tag 
+exactly as it has 
+been entered]]>
+</jsp:text>
+</body>
+</html>
+Forward.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+pageEncoding="UTF 8"%>
+<jsp:forward page="forwarded.jsp"></jsp:forward>
+Forwarded.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+pageEncoding="UTF 8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Forward Test</title>
+</head>
+<body>
+This page came from forward.jsp by using jsp:forward action tag
+</body>
+</html>
+Showbean.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+pageEncoding="UTF 8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Display Bean properties</title>
+</head>
+<body>
+<jsp:useBean id="productBean" class="com.ecommerce.ProductBean"
+scope="session"></jsp:useBean>
+Product Id: <jsp:getProperty name="productBean" property="productId" />
+<br>
+Product Name: <jsp:getProperty name="productBean" property="productName" />
+<br>
+Product Price: <jsp:getProperty name="productBean" property="price" /> <br>
+</body>
+</html>
+ProductBean.java ( Servlet ):
+package com.ecommerce;
+import java.io.Serializable;
+public class ProductBean implements Serializable {
+private String productId;
+private String productName;
+private double price;
+public void setProductId(String value) {
+this.productId = value;
+}
+public void setProductName(String value) {
+this.productName = value;
+}
+public void setPrice(double value) {
+this.price = value;
+}
+public String getProductId() {
+return this.productId;
+}
+public String getProductName() {
+return this.productName;
+}
+public double getPrice() {
+return this.price;
+}
+}
 
 
 
 # practice project5
 
-List Mapping Example:
-import java.util.List;
-
-public class Employee {
-    private int id;
-    private String name;
-    private List<String> phoneNumbers;
-
-    // Constructors, getters, setters, etc.
+Index.jsp:
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF 8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>JSP Sessions</title>
+</head>
+<body>
+<%
+if (request.getParameter("error") != null)
+out.println("<b>Your session has expired or is invalid.</b><br>");
+%>
+<form action="login.jsp" method="post">
+Name <input name="name" id="name" maxlength=40><br>
+Password <input type="password" name="pwd" id="pwd" maxlength="10"><br>
+<button>Submit</button>
+</form>
+</body>
+</html>
+Login.jsp:
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF 8"%>
+<%
+String name = request.getParameter("name");
+String pwd = request.getParameter("pwd");
+if (name == null || name.equals("") || pwd == null || pwd.equals("")) {
+response.sendRedirect("index.jsp?error=1");
+} else {
+session.setAttribute("name", name);
+response.sendRedirect("dashboard.jsp");
 }
-<!-- hibernate-mapping for Employee entity with List mapping -->
-<hibernate-mapping>
-    <class name="com.example.Employee" table="employee">
-        <id name="id" type="int">
-            <generator class="native" />
-        </id>
-        <property name="name" type="string" />
-        <list name="phoneNumbers" cascade="all">
-            <key column="employee_id" />
-            <index column="phone_index" type="integer" />
-            <element column="phone_number" type="string" />
-        </list>
-    </class>
-</hibernate-mapping>
-
-SET MAPPING EXAMPLE:
-
-import java.util.Set;
-
-public class Course {
-    private int id;
-    private String name;
-    private Set<String> students;
-
-    // Constructors, getters, setters, etc.
+%>
+Dashboard.jsp:
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF 8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+</head>
+<body>
+<%
+if (session.getAttribute("name") == null) {
+response.sendRedirect("index.jsp?error=1");
 }
-
-<!-- hibernate-mapping for Course entity with Set mapping -->
-<hibernate-mapping>
-    <class name="com.example.Course" table="course">
-        <id name="id" type="int">
-            <generator class="native" />
-        </id>
-        <property name="name" type="string" />
-        <set name="students" cascade="all">
-            <key column="course_id" />
-            <element column="student_name" type="string" />
-        </set>
-    </class>
-</hibernate-mapping>
-
-3.BAG MAPPING EXAMPLE
-
-import java.util.Collection;
-
-public class Department {
-    private int id;
-    private String name;
-    private Collection<String> employees;
-
-    // Constructors, getters, setters, etc.
-}
-<!-- hibernate-mapping for Department entity with Bag mapping -->
-<hibernate-mapping>
-    <class name="com.example.Department" table="department">
-        <id name="id" type="int">
-            <generator class="native" />
-        </id>
-        <property name="name" type="string" />
-        <bag name="employees" cascade="all">
-            <key column="department_id" />
-            <element column="employee_name" type="string" />
-        </bag>
-    </class>
-</hibernate-mapping>
-
-4. MAP MAPPING EXAMPLE
-   import java.util.Map;
-
-public class Student {
-    private int id;
-    private String name;
-    private Map<String, Integer> subjectMarks;
-
-    // Constructors, getters, setters, etc.
-}
-<!-- hibernate-mapping for Student entity with Map mapping -->
-<hibernate-mapping>
-    <class name="com.example.Student" table="student">
-        <id name="id" type="int">
-            <generator class="native" />
-        </id>
-        <property name="name" type="string" />
-        <map name="subjectMarks" cascade="all">
-            <key column="student_id" />
-            <index column="subject_name" type="string" />
-            <element column="marks" type="integer" />
-        </map>
-    </class>
-</hibernate-mapping>
-
-
-
- # practice project 6
-1.EMPLOYEE DETAIL
-
-import javax.persistence.*;
-
-@Entity
-@Table(name = "employee")
-public class Employee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-
-    // Getters, setters, etc.
-}
-
-2. Department Entity
-   import javax.persistence.*;
-import java.util.List;
-
-@Entity
-@Table(name = "department")
-public class Department {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-
-    // Lazy-loaded collection
-    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
-    private List<Employee> employees;
-
-    // Getters, setters, etc.
-}
-
-3.Hibernet Configuration
-
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-    <session-factory>
-        <!-- Other configuration properties -->
-
-        <!-- Enable lazy loading outside of transactions -->
-        <property name="hibernate.enable_lazy_load_no_trans">true</property>
-    </session-factory>
-</hibernate-configuration>
-
-#Example 
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
-public class LazyLoadingExample {
-    public static void main(String[] args) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-
-            // Fetch a department (lazy loading will be triggered when accessing employees)
-            Department department = session.get(Department.class, 1L);
-
-            // Access the employees collection (lazy loading will be triggered)
-            List<Employee> employees = department.getEmployees();
-
-            // Print employee names
-            for (Employee employee : employees) {
-                System.out.println("Employee Name: " + employee.getName());
-            }
-
-            transaction.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-
-
-# practice project: 7
-
-1.Address Component
-
-import javax.persistence.Embeddable;
-
-@Embeddable
-public class Address {
-    private String street;
-    private String city;
-    private String zipCode;
-
-    // Constructors, getters, setters, etc.
-}
-
-
-2.Employee Entity
-
-import javax.persistence.*;
-
-@Entity
-@Table(name = "employee")
-public class Employee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-
-    @Embedded
-    private Address address;
-
-    // Constructors, getters, setters, etc.
-}
-3. Hibernet Configuration
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-    <session-factory>
-        <!-- Other configuration properties -->
-    </session-factory>
-</hibernate-configuration>
-
-
-3. Example
-
-   import org.hibernate.Session;
-import org.hibernate.Transaction;
-
-public class ComponentMappingExample {
-    public static void main(String[] args) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-
-            // Create an Address component
-            Address address = new Address();
-            address.setStreet("123 Main St");
-            address.setCity("Cityville");
-            address.setZipCode("12345");
-
-            // Create an Employee entity with the embedded Address component
-            Employee employee = new Employee();
-            employee.setName("John Doe");
-            employee.setAddress(address);
-
-            // Save the Employee entity
-            session.save(employee);
-
-            transaction.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-
-# practice project 8
-
-1. MAVEN
-
-   <!-- Add Hibernate and Spring dependencies in your pom.xml -->
-<dependencies>
-    <!-- Hibernate -->
-    <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-core</artifactId>
-        <version>5.6.5.Final</version>
-    </dependency>
-
-    <!-- Spring -->
-    <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>5.3.10</version>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-orm</artifactId>
-        <version>5.3.10</version>
-    </dependency>
-
-    <!-- Database driver and connection pool (e.g., for MySQL) -->
-    <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.27</version>
-    </dependency>
-</dependencies>
-
-
-2.GRADLE
-
-// Add Hibernate and Spring dependencies in your build.gradle
-dependencies {
-    // Hibernate
-    implementation 'org.hibernate:hibernate-core:5.6.5.Final'
-
-    // Spring
-    implementation 'org.springframework:spring-context:5.3.10'
-    implementation 'org.springframework:spring-orm:5.3.10'
-
-    // Database driver and connection pool (e.g., for MySQL)
-    implementation 'mysql:mysql-connector-java:8.0.27'
-}
-
-
-3.HIBERNET CONFIGURATION 
-
-<!-- src/main/resources/hibernate.cfg.xml -->
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-    <session-factory>
-        <!-- JDBC Database connection settings -->
-        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/your_database_name</property>
-        <property name="hibernate.connection.username">your_username</property>
-        <property name="hibernate.connection.password">your_password</property>
-
-        <!-- JDBC connection pool settings -->
-        <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hibernate.c3p0.max_size">20</property>
-        <property name="hibernate.c3p0.timeout">300</property>
-        <property name="hibernate.c3p0.max_statements">50</property>
-        <property name="hibernate.c3p0.idle_test_period">3000</property>
-
-        <!-- Specify dialect -->
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-
-        <!-- Echo all executed SQL to stdout -->
-        <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.format_sql">true</property>
-
-        <!-- Drop and re-create the database schema on startup -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
-    </session-factory>
-</hibernate-configuration>
-
-
-
-4.SPRING CONFIGURATION
-
-<!-- src/main/resources/applicationContext.xml -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx.xsd">
-
-    <!-- Enable component scanning -->
-    <context:component-scan base-package="com.example"/>
-
-    <!-- Enable transaction management -->
-    <tx:annotation-driven/>
-
-    <!-- DataSource configuration -->
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/your_database_name"/>
-        <property name="username" value="your_username"/>
-        <property name="password" value="your_password"/>
-    </bean>
-
-    <!-- Hibernate SessionFactory -->
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="hibernateProperties">
-            <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-                <prop key="hibernate.show_sql">true</prop>
-                <prop key="hibernate.format_sql">true</prop>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
-            </props>
-        </property>
-        <property name="packagesToScan" value="com.example"/>
-    </bean>
-
-    <!-- Transaction Manager -->
-    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-</beans>
-
-5.Entity and DAO Classes
-
-
-// Employee.java
-@Entity
-@Table(name = "employee")
-public class Employee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-
-    // Getters, setters, etc.
-}
-
-// EmployeeDAO.java
-@Repository
-public class EmployeeDAO {
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @Transactional
-    public void saveEmployee(Employee employee) {
-        Session session = sessionFactory.getCurrentSession();
-        session.save(employee);
-    }
-
-    @Transactional(readOnly = true)
-    public Employee getEmployeeById(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-return session.get(Employee.class, id);
-}
-}
-
-
-### 5. Service Class:
-
-Create a service class that uses the DAO to perform business logic:
-
-```java
-// EmployeeService.java
-@Service
-public class EmployeeService {
-    @Autowired
-    private EmployeeDAO employeeDAO;
-
-    @Transactional
-    public void saveEmployee(Employee employee) {
-        employeeDAO.saveEmployee(employee);
-    }
-
-    @Transactional(readOnly = true)
-    public Employee getEmployeeById(Long id) {
-        return employeeDAO.getEmployeeById(id);
-    }
-
-    // Other business logic methods
-}
-
-6.Main Application
-
-// MainApp.java
-public class MainApp {
-    public static void main(String[] args) {
-        AnnotationConfigApplicationContext context =
-                new AnnotationConfigApplicationContext();
-        context.scan("com.example");
-        context.refresh();
-
-        EmployeeService employeeService = context.getBean(EmployeeService.class);
-
-        // Test Hibernate-Spring integration
-        Employee employee = new Employee();
-        employee.setName("John Doe");
-        employeeService.saveEmployee(employee);
-
-        Employee retrievedEmployee = employeeService.getEmployeeById(employee.getId());
-        System.out.println("Retrieved Employee: " + retrievedEmployee.getName());
-
-        context.close();
-    }
-}
-
-
-
+%>
+<b>Hello <%= session.getAttribute("name") %></b><br>
+<a href="logout.jsp">Click here to logout</a>
+</body>
+</html>
+Logout.jsp:
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF 8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Session Logout</title>
+</head>
+<body>
+<%
+session.invalidate();
+%>
+<b>Your session has terminated.</b><br>
+<a href="index.jsp">Login again</a>
+</body>
+</html>
