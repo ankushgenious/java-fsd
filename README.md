@@ -4,273 +4,330 @@ This repository contains PracticeProjects
 
 # Practice-Project 1
 
-Step 1: Create a Spring Boot Project
-Open IntelliJ IDEA.
-Click on "Create New Project."
-Choose "Spring Initializr" as the project type.
-Set the project name, location, and base package.
-Select the desired options (Java, Spring Boot version, packaging type, etc.).
-Add the "Spring Web" dependency.
-Click "Next" and then "Finish."
+1. Global Exception Handling:
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
-Step 2: Write a Simple Controller
+@ControllerAdvice
+public class GlobalExceptionHandler {
 
-// src/main/java/com/example/demo/controller/HelloController.java
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        // Log the exception
+        return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-package com.example.demo.controller;
+    // Add more methods for handling specific exceptions
+}
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+2.Controller-specific Exception Handling: 
 
-@RestController
-@RequestMapping("/api")
-public class HelloController {
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello, Spring Boot!";
+@ControllerAdvice
+public class MyControllerAdvice {
+
+    @ExceptionHandler(MyCustomException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleCustomException(MyCustomException e) {
+        // Log the exception
+        return new ResponseEntity<>("Bad request: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
 
+3. Custom Exception Classes:
 
-Step 3: Run the Application
+public class MyCustomException extends RuntimeException {
+    public MyCustomException(String message) {
+        super(message);
+    }
+}
+4. Use @ResponseStatus:
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
 
-mvn spring-boot:run
+5. Handle Validation Errors:
+@ExceptionHandler(MethodArgumentNotValidException.class)
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException e) {
+    // Log the exception
+    return new ResponseEntity<>("Validation error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+}
 
-Step 4: Access the Application
-Open your web browser and go to http://localhost:8080/api/hello. You should see the message "Hello, Spring Boot!" displayed on the page.
+6. Error Responses:
+public class ErrorResponse {
+    private String message;
+    private int status;
 
-
+    // Constructors, getters, setters
+}
+In your exception handler methods:
+@ExceptionHandler(MyCustomException.class)
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public ResponseEntity<ErrorResponse> handleCustomException(MyCustomException e) {
+    // Log the exception
+    ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+}
 
 
 #  Practice-Project 2
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+Step 1: Create a new Spring Boot Project
+Step 2: Create a Model Class
+public class User {
+    private Long id;
+    private String name;
+    private String username;
+    // getters and setters
+}
+Step 3: Create a Service to Consume the RESTful Web Service
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-// Custom event class
-class CustomEvent extends ActionEvent {
-    public CustomEvent(Object source, int id, String command) {
-        super(source, id, command);
+@Service
+public class UserService {
+
+    private final String apiUrl = "https://jsonplaceholder.typicode.com/users";
+
+    private final RestTemplate restTemplate;
+
+    public UserService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
-    public void customEventMethod() {
-        System.out.println("Custom event triggered!");
+    public User getUserById(Long userId) {
+        String url = apiUrl + "/" + userId;
+        return restTemplate.getForObject(url, User.class);
     }
 }
+Step 4: Create a Controller
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-// Custom event listener interface
-interface CustomActionListener extends ActionListener {
-    void customActionPerformed(CustomEvent e);
-}
+@RestController
+public class UserController {
 
-// Custom button class
-class CustomButton extends JButton {
-    private CustomActionListener customActionListener;
+    private final UserService userService;
 
-    public CustomButton(String text) {
-        super(text);
-
-        // Add action listener to handle default events
-        addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Default event triggered!");
-            }
-        });
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    // Set custom action listener
-    public void setCustomActionListener(CustomActionListener listener) {
-        this.customActionListener = listener;
-        // Add action listener to handle custom events
-        addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (customActionListener != null) {
-                    CustomEvent customEvent = new CustomEvent(e.getSource(), e.getID(), e.getActionCommand());
-                    customActionListener.customActionPerformed(customEvent);
-                }
-            }
-        });
+    @GetMapping("/users/{userId}")
+    public User getUser(@PathVariable Long userId) {
+        return userService.getUserById(userId);
     }
 }
+Step 5: Configure RestTemplate
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-// Main GUI class
-public class EventHandlingDemo extends JFrame {
-    public EventHandlingDemo() {
-        super("Event Handling Demo");
+@Configuration
+public class AppConfig {
 
-        // Create a custom button
-        CustomButton customButton = new CustomButton("Click Me");
-
-        // Set custom action listener for the button
-        customButton.setCustomActionListener(new CustomActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Custom action performed!");
-            }
-
-            @Override
-            public void customActionPerformed(CustomEvent e) {
-                e.customEventMethod();
-            }
-        });
-
-        // Add the button to the frame
-        getContentPane().setLayout(new FlowLayout());
-        getContentPane().add(customButton);
-
-        // Set frame properties
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 200);
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new EventHandlingDemo();
-            }
-        });
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
+Step 6: Run your Application
+Run your Spring Boot application, and it will expose an endpoint like http://localhost:8080/users/{userId}. You can make requests to this endpoint, and it will consume the RESTful web service and return the data.
 
 
 
 # Practice Project 3
 
-1. Create a MySQL Database:
-CREATE DATABASE sampledb;
-USE sampledb;
+Step 1: Create a Spring Boot Project
+https://start.spring.io/
+Step 2: Create a File Storage Configuration
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL
-);
+@ConfigurationProperties(prefix = "file")
+public class FileStorageProperties {
 
-INSERT INTO users (username, email) VALUES
-('user1', 'user1@example.com'),
-('user2', 'user2@example.com');
+    private String uploadDir;
 
-2. Set Up the Spring Project:
-<!-- Spring Core -->
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-    <version>5.3.12.RELEASE</version>
-</dependency>
-
-<!-- Spring JDBC -->
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-jdbc</artifactId>
-    <version>5.3.12.RELEASE</version>
-</dependency>
-
-<!-- MySQL Connector -->
-<dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>8.0.26</version>
-</dependency>
-
-
-3. Create a Spring Configuration:
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-
-import javax.sql.DataSource;
-
-@Configuration
-public class SpringConfig {
-
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/sampledb");
-        dataSource.setUsername("your_username");
-        dataSource.setPassword("your_password");
-        return dataSource;
+    public String getUploadDir() {
+        return uploadDir;
     }
 
-    @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
+    public void setUploadDir(String uploadDir) {
+        this.uploadDir = uploadDir;
     }
 }
+Step 3: Implement File Storage Service
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
-4. Create a Spring Service:
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+public interface FileStorageService {
+
+    String storeFile(MultipartFile file);
+
+    Resource loadFile(String fileName);
+}
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 @Service
-public class UserService {
+public class FileStorageServiceImpl implements FileStorageService {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final Path fileStorageLocation;
 
-    public List<User> getAllUsers() {
-        return jdbcTemplate.query("SELECT * FROM users", new UserMapper());
+    public FileStorageServiceImpl(FileStorageProperties fileStorageProperties) {
+        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
+                .toAbsolutePath().normalize();
+
+        try {
+            Files.createDirectories(this.fileStorageLocation);
+        } catch (Exception ex) {
+            throw new RuntimeException("Could not create the directory to upload files!", ex);
+        }
     }
-}
 
-5. Create a User Model and Mapper:
-public class User {
-    private Long id;
-    private String username;
-    private String email;
-
-    // Getters and setters
-}
-
-import org.springframework.jdbc.core.RowMapper;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-public class UserMapper implements RowMapper<User> {
     @Override
-    public User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        User user = new User();
-        user.setId(resultSet.getLong("id"));
-        user.setUsername(resultSet.getString("username"));
-        user.setEmail(resultSet.getString("email"));
-        return user;
+    public String storeFile(MultipartFile file) {
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+        try {
+            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation);
+
+            return fileName;
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
+        }
     }
-}
 
-6. Create a Main Application:
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+    @Override
+    public Resource loadFile(String fileName) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
 
-import java.util.List;
-
-public class MainApplication {
-
-    public static void main(String[] args) {
-        try (AnnotationConfigApplicationContext context =
-                     new AnnotationConfigApplicationContext(SpringConfig.class)) {
-
-            UserService userService = context.getBean(UserService.class);
-
-            // Retrieve and display all users from the database
-            List<User> users = userService.getAllUsers();
-            for (User user : users) {
-                System.out.println(user.getId() + ": " + user.getUsername() + ", " + user.getEmail());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new RuntimeException("File not found " + fileName);
             }
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException("File not found " + fileName, ex);
         }
     }
 }
+Step 4: Create Controller for File Upload and Download
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-7. 
+@Controller
+@RequestMapping("/files")
+public class FileController {
+
+    private final FileStorageService fileStorageService;
+
+    public FileController(FileStorageService fileStorageService) {
+        this.fileStorageService = fileStorageService;
+    }
+
+    @PostMapping("/upload")
+    public String uploadFile(@RequestParam("file") MultipartFile file) {
+        String fileName = fileStorageService.storeFile(file);
+        return "redirect:/files/" + fileName;
+    }
+
+    @GetMapping("/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+        Resource resource = fileStorageService.loadFile(fileName);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+}
+Step 5: Configure File Storage Properties
+file.upload-dir=uploads
+Step 6: Create Thymeleaf Template for File Upload
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload</title>
+</head>
+<body>
+
+<h2>File Upload</h2>
+
+<form th:action="@{/files/upload}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file"/>
+    <button type="submit">Upload</button>
+</form>
+
+</body>
+</html>
+Step 7: Run Your Application
+Run your Spring Boot application. You can access the file upload form at http://localhost:8080/upload.
+
+# practice project : 4
+Option A: Using a Self-signed Certificate (For Testing Only)
+keytool -genkeypair -alias myapp -keyalg RSA -keysize 2048 -keystore your_keystore_name.jks -validity 3650
+Step 2: Configure Spring Boot for HTTPS
+server.port=8443
+server.ssl.key-store=classpath:your_keystore_name.jks
+server.ssl.key-store-password=your_keystore_password
+server.ssl.key-password=your_key_password
+
+Step 3: Create a Controller to Display a Page
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
+}
+Step 4: Create a Thymeleaf Template
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot HTTPS Example</title>
+</head>
+<body>
+
+<h2>Hello, HTTPS!</h2>
+
+</body>
+</html>
+
+Step 5: Run Your Application
+Run your Spring Boot application, and it will be accessible over HTTPS at https://localhost:8080
