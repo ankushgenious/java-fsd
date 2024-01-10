@@ -2,332 +2,302 @@
 This repository contains PracticeProjects
 
 
-# Practice-Project 1
-
-1. Global Exception Handling:
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
-@ControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        // Log the exception
-        return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    // Add more methods for handling specific exceptions
+# Assisted practice : 1.Create a project to demonstrate microservices with Spring 
+BootRestApiOneApplication.java:
+package com.example.test; import 
+org.springframework.boot.SpringApplication; import 
+org.springframework.boot.autoconfigure.SpringBootApplication; 
+@SpringBootApplication public class 
+RestApiOneApplication { public static 
+void main(String[] args) { 
+SpringApplication.run(RestApiOneApplication.class, args); 
+} 
+} 
+PersonEntity.java :
+package com.example.test; import 
+jakarta.persistence.Column; import 
+jakarta.persistence.Entity; import 
+jakarta.persistence.GeneratedValue; import 
+jakarta.persistence.GenerationType; import 
+jakarta.persistence.Id; 
+@Entity public class 
+PersonEntity { 
+@Id 
+@GeneratedValue(strategy = GenerationType.AUTO) 
+@Column(name = "id", updatable = false, nullable = false) 
+private Integer personId; 
+@Column 
+private String name; 
+@Column 
+private Integer age; 
+public PersonEntity() { 
+super(); 
+} 
+public PersonEntity(Integer personId, String name, Integer age) { 
+super(); this.personId = personId; this.name = name; this.age = 
+age; 
+} 
+public Integer getPersonId() { 
+return personId; 
+} 
+public void setPersonId(Integer personId) { 
+this.personId = personId; 
+} 
+public String getName() { 
+return name; 
+} 
+public void setName(String name) { this.name 
+= name; 
+} 
+public Integer getAge() { return 
+age; 
+} 
+public void setAge(Integer age) { 
+this.age = age; 
+} 
+} 
+PersonRepository.java:
+package com.example.test; import 
+org.springframework.data.jpa.repository.JpaRepository; import 
+org.springframework.stereotype.Repository; 
+@Repository public interface PersonRepository extends 
+JpaRepository<PersonEntity, 
+Integer> { 
+} 
+PersonService.java:
+package com.example.test; import java.util.HashMap; import 
+java.util.Map; import 
+org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Service; import 
+org.springframework.web.client.RestTemplate; 
+@Service public class 
+PersonService { 
+@Autowired 
+PersonRepository personRepository; 
+RestTemplate restTemplate = new RestTemplate(); 
+public PersonResonse getPerson(int personId){ 
+final String uri = 
+"http://localhost:8082/webapitwo/hobby/{personId}"; 
+Map<String, Integer> params = new HashMap<String, Integer>(); 
+params.put("personId", personId); 
+String result = restTemplate.getForObject(uri, String.class, 
+params); 
+PersonEntity pe=personRepository.findById(personId).get(); 
+PersonResonse pr=new PersonResonse(); 
+pr.setPersonId(pe.getPersonId()); 
+pr.setName(pe.getName()); pr.setAge(pe.getAge()); 
+pr.setHobby(result); 
+return pr; 
+} 
+public void addPerson(PersonEntity pe){ 
+personRepository.save(pe); 
+} 
+} 
+PersonController.java:
+package com.example.test; import 
+org.springframework.beans.factory.annotation.Autowired; import 
+org.springframework.web.bind.annotation.PathVariable; import 
+org.springframework.web.bind.annotation.RequestBody; import 
+org.springframework.web.bind.annotation.RequestMapping; import 
+org.springframework.web.bind.annotation.RequestMethod; import 
+org.springframework.web.bind.annotation.RestController; 
+@RestController 
+@RequestMapping(path = "/webapione") public 
+class PersonController { 
+@Autowired 
+PersonService personService; 
+@RequestMapping("/person/{personId}") public 
+PersonResonse getPerson(@PathVariable int personId){ return 
+personService.getPerson(personId); 
+} 
+@RequestMapping(method=RequestMethod.POST, value="/person") public 
+void addPerson(@RequestBody PersonEntity pe ) { 
+personService.addPerson(pe); 
+} 
 }
-
-2.Controller-specific Exception Handling: 
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ControllerAdvice
-public class MyControllerAdvice {
-
-    @ExceptionHandler(MyCustomException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleCustomException(MyCustomException e) {
-        // Log the exception
-        return new ResponseEntity<>("Bad request: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+PersonResonse.java :
+package com.example.test; 
+public class PersonResonse { 
+private Integer personId; 
+private String name; private 
+Integer age; private String 
+hobby; public Integer 
+getPersonId() { return 
+personId; 
+} 
+public void setPersonId(Integer personId) { 
+this.personId = personId; 
+} 
+public String getName() { 
+return name; 
+} 
+public void setName(String name) { 
+this.name = name; 
+} 
+public Integer getAge() { return 
+age; 
+} 
+public void setAge(Integer age) { 
+this.age = age; 
+} 
+public String getHobby() { 
+return hobby; 
+} 
+public void setHobby(String result) { 
+this.hobby = result; 
+} 
+} 
+application.properties:
+server.port=808 
+spring.application.name=RestApiOne 
+pom.xml :
+<?xml version="1.0" encoding="UTF-8"?> <project 
+xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+https://maven.apache.org/xsd/maven-4.0.0.xsd"> 
+<modelVersion>4.0.0</modelVersion> 
+<parent> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-parent</artifactId> 
+<version>3.1.0</version> 
+<relativePath/> <!-- lookup parent from repository --> </parent> 
+<groupId>com.example</groupId> 
+<artifactId>RestApiOne</artifactId> 
+<version>0.0.1-SNAPSHOT</version> 
+<name>RestApiOne</name> 
+<description>Demo project for Spring Boot </description> 
+<properties> 
+<java.version>20</java.version> 
+</properties> 
+<dependencies> 
+<dependency> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-data-jpa</artifactId> 
+</dependency> 
+<dependency> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-web</artifactId> 
+</dependency> 
+<dependency> 
+<groupId>com.h2database</groupId> 
+<artifactId>h2</artifactId> 
+<scope>runtime</scope> 
+</dependency> 
+<dependency> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-test</artifactId> 
+<scope>test</scope> 
+</dependency> 
+</dependencies> 
+<build> 
+<plugins> 
+<plugin> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-maven-plugin</artifactId> 
+</plugin> 
+</plugins> 
+</build> 
+</project> 
+Output :
+ 
+RestApiTwoApplication.java:
+package com.example.test; import 
+org.springframework.boot.SpringApplic
+ation; import 
+org.springframework.boot.autoconfigur
+e.SpringBootApplication; 
+@SpringBootApplication public class 
+RestApiTwoApplication { public static 
+void main(String[] args) { 
+SpringApplication.run(RestApiTwoApplication.class, args); 
+} 
+} 
+HobbyEntity.java :
+package com.example.test; import 
+jakarta.persistence.Column; import 
+jakarta.persistence.Entity; import 
+jakarta.persistence.GeneratedValue; import 
+jakarta.persistence.GenerationType; import 
+jakarta.persistence.Id; 
+@Entity public class 
+HobbyEntity { 
+@Id 
+@GeneratedValue(strategy = GenerationType.AUTO) 
+@Column(name = "id", updatable = false, nullable = false) private 
+Integer id; 
+@Column 
+private Integer personId; 
+@Column 
+private String name; 
+public HobbyEntity() { 
+super(); 
+} 
+public HobbyEntity(Integer personId, String name) { 
+super(); this.personId = personId; this.name = 
+name; 
+} 
+public Integer getPersonId() { 
+return personId; 
+} 
+public void setPersonId(Integer personId) { 
+this.personId = personId; 
+} 
+public String getName() { 
+return name; 
+} 
+public void setName(String name) { 
+this.name = name; 
+} 
 }
-
-3. Custom Exception Classes:
-
-public class MyCustomException extends RuntimeException {
-    public MyCustomException(String message) {
-        super(message);
-    }
-}
-4. Use @ResponseStatus:
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message) {
-        super(message);
-    }
-}
-
-5. Handle Validation Errors:
-@ExceptionHandler(MethodArgumentNotValidException.class)
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException e) {
-    // Log the exception
-    return new ResponseEntity<>("Validation error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-}
-
-6. Error Responses:
-public class ErrorResponse {
-    private String message;
-    private int status;
-
-    // Constructors, getters, setters
-}
-In your exception handler methods:
-@ExceptionHandler(MyCustomException.class)
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public ResponseEntity<ErrorResponse> handleCustomException(MyCustomException e) {
-    // Log the exception
-    ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
-    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-}
-
-
-#  Practice-Project 2
-Step 1: Create a new Spring Boot Project
-Step 2: Create a Model Class
-public class User {
-    private Long id;
-    private String name;
-    private String username;
-    // getters and setters
-}
-Step 3: Create a Service to Consume the RESTful Web Service
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-@Service
-public class UserService {
-
-    private final String apiUrl = "https://jsonplaceholder.typicode.com/users";
-
-    private final RestTemplate restTemplate;
-
-    public UserService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
-    public User getUserById(Long userId) {
-        String url = apiUrl + "/" + userId;
-        return restTemplate.getForObject(url, User.class);
-    }
-}
-Step 4: Create a Controller
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class UserController {
-
-    private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-    @GetMapping("/users/{userId}")
-    public User getUser(@PathVariable Long userId) {
-        return userService.getUserById(userId);
-    }
-}
-Step 5: Configure RestTemplate
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
-
-@Configuration
-public class AppConfig {
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-}
-Step 6: Run your Application
-Run your Spring Boot application, and it will expose an endpoint like http://localhost:8080/users/{userId}. You can make requests to this endpoint, and it will consume the RESTful web service and return the data.
-
-
-
-# Practice Project 3
-
-Step 1: Create a Spring Boot Project
-https://start.spring.io/
-Step 2: Create a File Storage Configuration
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-@ConfigurationProperties(prefix = "file")
-public class FileStorageProperties {
-
-    private String uploadDir;
-
-    public String getUploadDir() {
-        return uploadDir;
-    }
-
-    public void setUploadDir(String uploadDir) {
-        this.uploadDir = uploadDir;
-    }
-}
-Step 3: Implement File Storage Service
-import org.springframework.core.io.Resource;
-import org.springframework.web.multipart.MultipartFile;
-
-public interface FileStorageService {
-
-    String storeFile(MultipartFile file);
-
-    Resource loadFile(String fileName);
-}
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Objects;
-
-@Service
-public class FileStorageServiceImpl implements FileStorageService {
-
-    private final Path fileStorageLocation;
-
-    public FileStorageServiceImpl(FileStorageProperties fileStorageProperties) {
-        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
-                .toAbsolutePath().normalize();
-
-        try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ex) {
-            throw new RuntimeException("Could not create the directory to upload files!", ex);
-        }
-    }
-
-    @Override
-    public String storeFile(MultipartFile file) {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-
-        try {
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation);
-
-            return fileName;
-        } catch (IOException ex) {
-            throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
-        }
-    }
-
-    @Override
-    public Resource loadFile(String fileName) {
-        try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new RuntimeException("File not found " + fileName);
-            }
-        } catch (MalformedURLException ex) {
-            throw new RuntimeException("File not found " + fileName, ex);
-        }
-    }
-}
-Step 4: Create Controller for File Upload and Download
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-@Controller
-@RequestMapping("/files")
-public class FileController {
-
-    private final FileStorageService fileStorageService;
-
-    public FileController(FileStorageService fileStorageService) {
-        this.fileStorageService = fileStorageService;
-    }
-
-    @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
-        return "redirect:/files/" + fileName;
-    }
-
-    @GetMapping("/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
-        Resource resource = fileStorageService.loadFile(fileName);
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
-    }
-}
-Step 5: Configure File Storage Properties
-file.upload-dir=uploads
-Step 6: Create Thymeleaf Template for File Upload
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>File Upload</title>
-</head>
-<body>
-
-<h2>File Upload</h2>
-
-<form th:action="@{/files/upload}" method="post" enctype="multipart/form-data">
-    <input type="file" name="file"/>
-    <button type="submit">Upload</button>
-</form>
-
-</body>
-</html>
-Step 7: Run Your Application
-Run your Spring Boot application. You can access the file upload form at http://localhost:8080/upload.
-
-# practice project : 4
-Option A: Using a Self-signed Certificate (For Testing Only)
-keytool -genkeypair -alias myapp -keyalg RSA -keysize 2048 -keystore your_keystore_name.jks -validity 3650
-Step 2: Configure Spring Boot for HTTPS
-server.port=8443
-server.ssl.key-store=classpath:your_keystore_name.jks
-server.ssl.key-store-password=your_keystore_password
-server.ssl.key-password=your_key_password
-
-Step 3: Create a Controller to Display a Page
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
-@Controller
-public class HomeController {
-
-    @GetMapping("/")
-    public String home() {
-        return "home";
-    }
-}
-Step 4: Create a Thymeleaf Template
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Spring Boot HTTPS Example</title>
-</head>
-<body>
-
-<h2>Hello, HTTPS!</h2>
-
-</body>
-</html>
-
-Step 5: Run Your Application
-Run your Spring Boot application, and it will be accessible over HTTPS at https://localhost:8080
+HobbyRepository.java :
+package com.example.test; import 
+org.springframework.data.jpa.repository.JpaRepository; import 
+org.springframework.data.jpa.repository.Query; import 
+org.springframework.stereotype.Repository; 
+@Repository public interface HobbyRepository extends 
+JpaRepository<HobbyEntity, 
+Integer> { 
+@Query("SELECT h.name FROM HobbyEntity h WHERE 
+h.personId=:personId") public String 
+findByPersonId(Integer personId); 
+} 
+HobbyService.java :
+package com.example.test; import 
+org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Service; 
+@Service public class 
+HobbyService { 
+@Autowired 
+HobbyRepository hobbyRepository; 
+public String findByPersonId(int personid){ return 
+hobbyRepository.findByPersonId(personid); 
+} 
+public void addHobby(HobbyEntity he){ 
+hobbyRepository.save(he); 
+} 
+} 
+HobbyController.java:
+package com.example.test; import 
+org.springframework.beans.factory.annotation.Autowired; import 
+org.springframework.web.bind.annotation.PathVariable; import 
+org.springframework.web.bind.annotation.RequestBody; import 
+org.springframework.web.bind.annotation.RequestMapping; import 
+org.springframework.web.bind.annotation.RequestMethod; import 
+org.springframework.web.bind.annotation.RestController; 
+@RestController 
+@RequestMapping(path = "/webapitwo") public 
+class HobbyController { 
+@Autowired 
+HobbyService hobbyService; 
+@RequestMapping("/hobby/{personid}") public String 
+findByPersonId(@PathVariable int personid){ return 
+hobbyService.findByPersonId(personid); 
+} 
+@RequestMapping(method=RequestMethod.POST, value="/hobby") public void 
+addHobby(@RequestBody HobbyEntity he ) { hobbyService.addHobby(he); 
+} 
+} 
+application.properties:
+server.port=8082 
+spring.application.name=RestApiTwo 
